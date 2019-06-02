@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <map>
-#include <deque>
+#include <vector>
 
 enum class QueryTypes : int
 {
@@ -27,7 +27,7 @@ struct QueryData
     QueryData(DataType p_Type, std::string const& p_Column, std::string const& p_Data) : Type(p_Type), Column(p_Column), Data(p_Data) { }
 };
 
-typedef std::map<uint32_t, std::deque<std::unique_ptr<QueryData>>> ValuesContainer;
+typedef std::map<uint32_t, std::vector<std::unique_ptr<QueryData>>> ValuesContainer;
 
 class QueryBuilder
 {

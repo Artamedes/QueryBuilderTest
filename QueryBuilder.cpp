@@ -18,8 +18,13 @@ void QueryBuilder::AddColumn(uint32_t p_Id, DataType p_Type, std::string p_Colum
             break;
 
         case DataType::Key:
-            m_Values[p_Id].push_front(std::move(l_Data));
+        {
+            auto& l_Vector = m_Values[p_Id];
+
+            m_Values[p_Id].insert(l_Vector.begin(), std::move(l_Data));
+
             break;
+        }
     }
 }
 
@@ -154,7 +159,7 @@ std::string QueryBuilder::Generate() const
 
                 while (l_KeyBegin != l_Keys.end())
                 {
-                    l_Result << (*l_KeyBegin).first << " = `" << (*l_KeyBegin).second << "`";
+                    l_Result << "`" << (*l_KeyBegin).first << "`" << " = `" << (*l_KeyBegin).second << "`";
 
                     if (++l_KeyBegin != l_Keys.end())
                     {
