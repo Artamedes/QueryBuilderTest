@@ -7,7 +7,7 @@ int main()
     QueryBuilder l_Builder(QueryTypes::Update, "item_template");
 
     l_Builder.AddColumn(0, DataType::Key, "entry", "1337");
-    l_Builder.AddColumn(0, DataType::None, "class", "2");
+    l_Builder.AddColumn(0, DataType::Key, "class", "2");
     l_Builder.AddColumn(0, DataType::None, "subclass", "7");
     l_Builder.AddColumn(0, DataType::None, "name", "Lost sword of the four gods");
     l_Builder.AddColumn(0, DataType::None, "inventorytype", "13");

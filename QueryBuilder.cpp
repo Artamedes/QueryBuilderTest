@@ -7,33 +7,18 @@ QueryBuilder::QueryBuilder(QueryTypes p_Type, std::string const& p_Table) :
 {
 }
 
-QueryBuilder::~QueryBuilder()
-{
-    auto l_Data = m_Values.begin();
-
-    while (l_Data != m_Values.end())
-    {
-        auto& l_Vector = l_Data->second;
-
-        for (QueryData* l_Itr : l_Vector)
-            delete l_Itr;
-
-        ++l_Data;
-    }
-}
-
 void QueryBuilder::AddColumn(uint32_t p_Id, DataType p_Type, std::string p_Column, std::string p_Data)
 {
-    QueryData* l_Data = new QueryData(p_Type, p_Column, p_Data);
+    std::unique_ptr<QueryData> l_Data = std::make_unique<QueryData>(p_Type, p_Column, p_Data);
 
     switch (p_Type)
     {
         case DataType::None:
-            m_Values[p_Id].push_back(l_Data);
+            m_Values[p_Id].push_back(std::move(l_Data));
             break;
 
         case DataType::Key:
-            m_Values[p_Id].push_back(l_Data);
+            m_Values[p_Id].push_front(std::move(l_Data));
             break;
     }
 }
@@ -129,6 +114,7 @@ std::string QueryBuilder::Generate() const
 
         case QueryTypes::Update:
         {
+            /// For multiple WHERE
             typedef std::multimap<std::string, std::string> KeysMap;
 
             KeysMap l_Keys;
@@ -172,7 +158,7 @@ std::string QueryBuilder::Generate() const
 
                     if (++l_KeyBegin != l_Keys.end())
                     {
-                        l_Result << ", ";
+                        l_Result << " AND ";
                     }
                 }
 
@@ -194,18 +180,6 @@ void QueryBuilder::Reset(QueryTypes p_Type, std::string const& p_Table)
 {
     m_Type = p_Type;
     m_Table = p_Table;
-
-    auto l_Data = m_Values.begin();
-
-    while (l_Data != m_Values.end())
-    {
-        auto& l_Vector = l_Data->second;
-
-        for (QueryData* l_Itr : l_Vector)
-            delete l_Itr;
-
-        ++l_Data;
-    }
 
     m_Values.clear();
 }

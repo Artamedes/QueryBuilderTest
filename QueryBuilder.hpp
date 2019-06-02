@@ -1,16 +1,17 @@
 #pragma once
 
+#include <memory>
 #include <map>
-#include <vector>
+#include <deque>
 
-enum class QueryTypes
+enum class QueryTypes : int
 {
     Insert,
     Replace,
     Update,
 };
 
-enum class DataType
+enum class DataType : int
 {
     None,
     Key,
@@ -23,15 +24,15 @@ struct QueryData
     std::string Column;
     std::string Data;
 
-    QueryData(DataType p_Type, std::string const& p_Column, std::string const& p_Data) : Type(p_Type), Column(p_Column), Data(p_Data)
-    { }
+    QueryData(DataType p_Type, std::string const& p_Column, std::string const& p_Data) : Type(p_Type), Column(p_Column), Data(p_Data) { }
 };
+
+typedef std::map<uint32_t, std::deque<std::unique_ptr<QueryData>>> ValuesContainer;
 
 class QueryBuilder
 {
     public:
         QueryBuilder(QueryTypes p_Type, std::string const& p_Table);
-        ~QueryBuilder();
         void AddColumn(uint32_t p_Id, DataType p_Type, std::string p_Column, std::string p_Data);
         std::string Generate() const;
         void Reset(QueryTypes p_Type, std::string const& p_Table);
@@ -39,5 +40,5 @@ class QueryBuilder
     private:
         QueryTypes m_Type;
         std::string m_Table;
-        std::map<uint32_t, std::vector<QueryData*>> m_Values;
+        ValuesContainer m_Values;
 };
